@@ -1,0 +1,9 @@
+{
+  "name": "Конструктор карточек",
+  "short_name": "Карточки",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f6fa",
+  "theme_color": "#101522",
+  "icons": []
+}

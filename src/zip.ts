@@ -46,8 +46,17 @@ function toBlobPart(bytes: Uint8Array): BlobPart {
 function createLocalHeader(nameBytes: Uint8Array, data: Uint8Array, crc: number) {
   const buffer = new ArrayBuffer(30 + nameBytes.length);
   const view = new DataView(buffer);
-  writeHeaderBase(view, 0x04034b50, crc, data.length);
+  view.setUint32(0, 0x04034b50, true);
+  view.setUint16(4, 20, true);
+  view.setUint16(6, 0x0800, true);
+  view.setUint16(8, 0, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0, true);
+  view.setUint32(14, crc, true);
+  view.setUint32(18, data.length, true);
+  view.setUint32(22, data.length, true);
   view.setUint16(26, nameBytes.length, true);
+  view.setUint16(28, 0, true);
   new Uint8Array(buffer, 30).set(nameBytes);
   return new Uint8Array(buffer);
 }
@@ -56,24 +65,25 @@ function createCentralHeader(entry: ZipEntry) {
   const nameBytes = encoder.encode(entry.name);
   const buffer = new ArrayBuffer(46 + nameBytes.length);
   const view = new DataView(buffer);
-  writeHeaderBase(view, 0x02014b50, entry.crc, entry.data.length);
+  view.setUint32(0, 0x02014b50, true);
   view.setUint16(4, 20, true);
-  view.setUint16(26, nameBytes.length, true);
+  view.setUint16(6, 20, true);
+  view.setUint16(8, 0x0800, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0, true);
+  view.setUint16(14, 0, true);
+  view.setUint32(16, entry.crc, true);
+  view.setUint32(20, entry.data.length, true);
+  view.setUint32(24, entry.data.length, true);
+  view.setUint16(28, nameBytes.length, true);
+  view.setUint16(30, 0, true);
+  view.setUint16(32, 0, true);
+  view.setUint16(34, 0, true);
+  view.setUint16(36, 0, true);
+  view.setUint32(38, 0, true);
   view.setUint32(42, entry.localHeaderOffset, true);
   new Uint8Array(buffer, 46).set(nameBytes);
   return new Uint8Array(buffer);
-}
-
-function writeHeaderBase(view: DataView, signature: number, crc: number, size: number) {
-  view.setUint32(0, signature, true);
-  view.setUint16(4, 20, true);
-  view.setUint16(6, 0, true);
-  view.setUint16(8, 0, true);
-  view.setUint16(10, 0, true);
-  view.setUint16(12, 0, true);
-  view.setUint32(14, crc, true);
-  view.setUint32(18, size, true);
-  view.setUint32(22, size, true);
 }
 
 function createEndRecord(entryCount: number, centralDirectorySize: number, centralDirectoryOffset: number) {

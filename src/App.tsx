@@ -311,7 +311,12 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 function safeName(name: string) {
-  return name.replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}_-]+/gu, '-').replace(/^-+|-+$/g, '') || 'card';
+  return name
+    .replace(/\.[^.]+$/, '')
+    .normalize('NFKD')
+    .replace(/[^A-Za-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase() || 'card';
 }
 
 function clamp(value: number, min: number, max: number) {

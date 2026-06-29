@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Редактор шаблонов</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <aside class="sidebar">
+        <header>
+          <h1>Редактор шаблонов</h1>
+          <p>Создайте группы, шаблоны и текстовые поля. Экспортируйте JSON в `public/templates/templates.json`.</p>
+        </header>
+
+        <div class="actions">
+          <label class="button secondary">
+            Импорт JSON
+            <input id="importJson" type="file" accept="application/json,.json" hidden />
+          </label>
+          <button id="exportJson" class="button primary">Скачать templates.json</button>
+        </div>
+
+        <section class="panel">
+          <div class="sectionTitle">
+            <strong>Группы</strong>
+            <button id="addGroup" class="iconButton" title="Добавить группу">+</button>
+          </div>
+          <div id="groupList" class="list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="sectionTitle">
+            <strong>Шаблоны</strong>
+            <button id="addTemplate" class="iconButton" title="Добавить шаблон">+</button>
+          </div>
+          <div id="templateList" class="list"></div>
+        </section>
+      </aside>
+
+      <section class="stagePanel">
+        <div class="stageToolbar">
+          <label>
+            Масштаб
+            <input id="zoom" type="range" min="0.35" max="0.9" step="0.05" value="0.62" />
+          </label>
+          <span id="activeHint">Выберите шаблон</span>
+        </div>
+        <div id="stageWrap" class="stageWrap">
+          <div id="stage" class="stage">
+            <img id="svgPreview" alt="" />
+            <div id="fieldLayer"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector">
+        <section class="panel">
+          <h2>Группа</h2>
+          <label>Название <input id="groupTitle" type="text" /></label>
+          <label>ID <input id="groupId" type="text" /></label>
+          <button id="deleteGroup" class="button danger">Удалить группу</button>
+        </section>
+
+        <section class="panel">
+          <h2>Шаблон</h2>
+          <label>Название <input id="templateTitle" type="text" /></label>
+          <label>ID <input id="templateId" type="text" /></label>
+          <label>Папка внутри /templates <input id="templateFolder" type="text" placeholder="moscow-region" /></label>
+          <label class="button secondary">
+            Выбрать SVG
+            <input id="templateSvgFile" type="file" accept=".svg,image/svg+xml" hidden />
+          </label>
+          <label>Путь к SVG <input id="templateSvg" type="text" placeholder="/templates/group/template.svg" /></label>
+          <div class="templateSize">
+            <label>Ширина <input id="templateWidth" type="number" min="1" step="1" /></label>
+            <label>Высота <input id="templateHeight" type="number" min="1" step="1" /></label>
+          </div>
+          <div class="rowActions">
+            <button id="addField" class="button secondary">Добавить поле</button>
+            <button id="deleteTemplate" class="button danger">Удалить шаблон</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="sectionTitle">
+            <h2>Текстовые поля</h2>
+          </div>
+          <div id="fieldList" class="list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Активное поле</h2>
+          <div id="fieldEditor" class="fieldEditor"></div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

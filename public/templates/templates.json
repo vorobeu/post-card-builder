@@ -12,7 +12,7 @@
           "height": 1000,
           "textFields": [
             {
-              "name": "zagolovok",
+              "name": "...",
               "label": "Заголовок",
               "x": 84,
               "y": 938,
@@ -44,8 +44,8 @@
           "height": 1000,
           "textFields": [
             {
-              "name": "field_1",
-              "label": "Новое поле",
+              "name": "...",
+              "label": "Заголовок",
               "x": 84,
               "y": 938,
               "width": 800,

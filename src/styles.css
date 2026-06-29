@@ -160,10 +160,11 @@ button:disabled {
 
 .preview {
   width: min(100%, calc(100vh - 155px));
-  aspect-ratio: 1;
+  max-height: calc(100vh - 155px);
   border-radius: 8px;
   background: #d8deea;
   box-shadow: 0 18px 48px rgba(23, 32, 51, 0.14);
+  object-fit: contain;
 }
 
 .preview.compact {

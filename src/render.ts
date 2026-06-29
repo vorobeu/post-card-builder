@@ -1,12 +1,6 @@
-import type { CardItem, Template } from './types';
+import type { CardItem, Template, TextField } from './types';
 
-const CANVAS_SIZE = 1000;
 const CORNER_RADIUS = 34;
-const TITLE_X = 84;
-const TITLE_MAX_WIDTH = 850;
-const TITLE_BASELINE = 938;
-const TITLE_LINE_HEIGHT = 53;
-const TITLE_MAX_LINES = 3;
 
 const imageCache = new Map<string, HTMLImageElement>();
 
@@ -14,23 +8,15 @@ export async function renderCard(card: CardItem, template: Template): Promise<Bl
   await loadExportFont();
 
   const canvas = document.createElement('canvas');
-  canvas.width = CANVAS_SIZE;
-  canvas.height = CANVAS_SIZE;
+  canvas.width = template.width;
+  canvas.height = template.height;
 
   const context = canvas.getContext('2d');
   if (!context) {
     throw new Error('Canvas is not supported in this browser.');
   }
 
-  const photo = await loadImage(card.imageUrl);
-  drawRoundedPhoto(context, photo, card.crop);
-
-  const overlay = await loadImage(template.svgPath);
-  context.drawImage(overlay, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-  if (template.hasTitle && card.title.trim()) {
-    drawTitle(context, card.title.trim());
-  }
+  await drawCard(context, card, template);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -43,53 +29,69 @@ export async function renderCard(card: CardItem, template: Template): Promise<Bl
 export async function drawPreview(canvas: HTMLCanvasElement, card: CardItem, template: Template) {
   await loadExportFont();
 
-  canvas.width = CANVAS_SIZE;
-  canvas.height = CANVAS_SIZE;
+  canvas.width = template.width;
+  canvas.height = template.height;
   const context = canvas.getContext('2d');
   if (!context) return;
 
+  await drawCard(context, card, template);
+}
+
+async function drawCard(context: CanvasRenderingContext2D, card: CardItem, template: Template) {
   const photo = await loadImage(card.imageUrl);
-  drawRoundedPhoto(context, photo, card.crop);
+  drawRoundedPhoto(context, photo, card.crop, template.width, template.height);
 
   const overlay = await loadImage(template.svgPath);
-  context.drawImage(overlay, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  context.drawImage(overlay, 0, 0, template.width, template.height);
 
-  if (template.hasTitle && card.title.trim()) {
-    drawTitle(context, card.title.trim());
+  for (const field of template.textFields) {
+    const value = card.fieldValues[field.name]?.trim();
+    if (value) drawTextField(context, field, value);
   }
 }
 
-function drawRoundedPhoto(context: CanvasRenderingContext2D, image: HTMLImageElement, crop: CardItem['crop']) {
-  context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+function drawRoundedPhoto(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  crop: CardItem['crop'],
+  canvasWidth: number,
+  canvasHeight: number,
+) {
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
   context.save();
-  roundedRect(context, 0, 0, CANVAS_SIZE, CANVAS_SIZE, CORNER_RADIUS);
+  roundedRect(context, 0, 0, canvasWidth, canvasHeight, CORNER_RADIUS);
   context.clip();
 
-  const baseScale = Math.max(CANVAS_SIZE / image.naturalWidth, CANVAS_SIZE / image.naturalHeight);
+  const baseScale = Math.max(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight);
   const scale = baseScale * crop.scale;
   const width = image.naturalWidth * scale;
   const height = image.naturalHeight * scale;
-  const x = (CANVAS_SIZE - width) / 2 + crop.offsetX;
-  const y = (CANVAS_SIZE - height) / 2 + crop.offsetY;
+  const x = (canvasWidth - width) / 2 + crop.offsetX;
+  const y = (canvasHeight - height) / 2 + crop.offsetY;
 
   context.drawImage(image, x, y, width, height);
   context.restore();
 }
 
-function drawTitle(context: CanvasRenderingContext2D, title: string) {
+function drawTextField(context: CanvasRenderingContext2D, field: TextField, rawText: string) {
+  const text = field.uppercase ? rawText.toUpperCase() : rawText;
+
   context.save();
-  context.fillStyle = '#ffffff';
-  context.font = '500 52px "Stolzl Medium", Arial, sans-serif';
+  context.translate(field.x, field.y);
+  context.rotate((field.rotation * Math.PI) / 180);
+  context.fillStyle = field.color || '#ffffff';
+  context.font = `${field.fontWeight ?? 500} ${field.fontSize}px "Stolzl Medium", Arial, sans-serif`;
+  context.textAlign = field.align;
   context.textBaseline = 'alphabetic';
   context.shadowColor = 'rgba(0, 0, 0, 0.14)';
   context.shadowBlur = 10;
   context.shadowOffsetY = 3;
 
-  const lines = wrapText(context, title.toUpperCase(), TITLE_MAX_WIDTH, TITLE_MAX_LINES);
-  const startY = TITLE_BASELINE - (lines.length - 1) * TITLE_LINE_HEIGHT;
+  const lines = wrapText(context, text, field.width, field.maxLines);
+  const startY = -(lines.length - 1) * field.lineHeight;
 
   lines.forEach((line, index) => {
-    context.fillText(line, TITLE_X, startY + index * TITLE_LINE_HEIGHT);
+    context.fillText(line, 0, startY + index * field.lineHeight);
   });
   context.restore();
 }
@@ -126,9 +128,9 @@ function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: num
     }
   }
 
-  const sourceLineCount = text.split(/\s+/).filter(Boolean).length;
-  const renderedLineCount = lines.join(' ').split(/\s+/).filter(Boolean).length;
-  if (renderedLineCount < sourceLineCount && lines.length) {
+  const sourceWordCount = text.split(/\s+/).filter(Boolean).length;
+  const renderedWordCount = lines.join(' ').split(/\s+/).filter(Boolean).length;
+  if (renderedWordCount < sourceWordCount && lines.length) {
     ellipsizeLastLine(context, lines, maxWidth);
   }
 

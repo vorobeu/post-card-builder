@@ -60,6 +60,11 @@ button:disabled {
   color: #5f697a;
 }
 
+.notice {
+  color: #9f5b00;
+  font-weight: 700;
+}
+
 .topbarActions,
 .controlActions {
   display: flex;
@@ -207,15 +212,27 @@ button:disabled {
   font-weight: 700;
 }
 
+.groupTabs,
+.templateGrid,
 .segmented {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 6px;
   padding: 4px;
   border-radius: 8px;
   background: #eef1f6;
 }
 
+.groupTabs {
+  grid-template-columns: 1fr;
+}
+
+.templateGrid,
+.segmented {
+  grid-template-columns: 1fr 1fr;
+}
+
+.groupTabs button,
+.templateGrid button,
 .segmented button {
   min-height: 38px;
   border: 0;
@@ -229,10 +246,25 @@ button:disabled {
   font-weight: 800;
 }
 
+.groupTabs button.selected,
+.templateGrid button.selected,
 .segmented button.selected {
   color: #102052;
   background: #fff;
   box-shadow: 0 1px 5px rgba(23, 32, 51, 0.12);
+}
+
+.textFieldList {
+  display: grid;
+  gap: 10px;
+}
+
+.textField {
+  display: grid;
+  gap: 7px;
+  color: #5a6475;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 textarea {

@@ -7,7 +7,7 @@
         {
           "id": "with-title",
           "title": "Квадрат с заголовком",
-          "svgPath": "/templates/default/template-with-title.svg",
+          "svgPath": "/templates/MORO/template-with-title.svg",
           "width": 1000,
           "height": 1000,
           "textFields": [
@@ -31,7 +31,7 @@
         {
           "id": "no-title",
           "title": "Квадрат",
-          "svgPath": "/templates/default/template-no-title.svg",
+          "svgPath": "/templates/MORO/template-no-title.svg",
           "width": 1000,
           "height": 1000,
           "textFields": []
@@ -39,7 +39,7 @@
         {
           "id": "w-with-title",
           "title": "Прямоугольник с заголовком",
-          "svgPath": "/templates/default/w-with-title.svg",
+          "svgPath": "/templates/MORO/w-with-title.svg",
           "width": 1470,
           "height": 1000,
           "textFields": [
@@ -63,7 +63,7 @@
         {
           "id": "w-no-title",
           "title": "Прямоугольник",
-          "svgPath": "/templates/default/w-no-title.svg",
+          "svgPath": "/templates/MORO/w-no-title.svg",
           "width": 1470,
           "height": 1000,
           "textFields": []

@@ -367,7 +367,18 @@ function Preview({ card, template, compact = false }: { card: CardItem; template
     };
   }, [card, template]);
 
-  return <canvas className={compact ? 'preview compact' : 'preview'} ref={canvasRef} aria-label="Предпросмотр карточки" />;
+  const style = {
+    aspectRatio: `${template.width} / ${template.height}`,
+  };
+
+  return (
+    <canvas
+      className={compact ? 'preview compact' : 'preview'}
+      ref={canvasRef}
+      style={style}
+      aria-label="Предпросмотр карточки"
+    />
+  );
 }
 
 function normalizeCatalog(raw: TemplateCatalog): TemplateCatalog {
